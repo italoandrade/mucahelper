@@ -1,0 +1,11 @@
+@import "~ng-smn-ui/core/core";
+@import "~ng-smn-ui/core/theme";
+
+$primary: (color: 'blue', hue: '500');
+$accent: (color: 'pink', hue: '400');
+
+$theme: ui-theme($primary, $accent, true);
+
+@include ui-core();
+
+@include ui-build-theme($theme);
