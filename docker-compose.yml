@@ -1,0 +1,13 @@
+  mucahelper:
+    image: node:7.10.0
+    volumes:
+      - "./mucahelper:/deploy"
+    working_dir: "/deploy"
+    ports:
+      - "3222:3222"
+      - "3223:3223"
+    environment:
+      - VIRTUAL_HOST=mucahelper.trackfy.com
+      - NODE_ENV=production
+    command: bash -c "npm install && node web-server"
+    container_name: MUCAHelper
