@@ -10,18 +10,18 @@
         <ui-data-table class="responsive">
             <tbody>
             <tr>
-                <!--<th>Alerta</th>-->
+                <th>Alerta</th>
                 <th>Personagem</th>
                 <th>Resets</th>
                 <th>Level</th>
                 <th>Tempo desde a última alteração do level</th>
             </tr>
             <tr *ngFor="let user of users">
-                <!--<td class="option">-->
-                    <!--<ui-option>-->
-                        <!--<input type="checkbox" [(ngModel)]="user.alert" [checked]="user.alert">-->
-                    <!--</ui-option>-->
-                <!--</td>-->
+                <td class="option">
+                    <ui-option>
+                        <input type="checkbox" [(ngModel)]="user.alert" [checked]="user.alert">
+                    </ui-option>
+                </td>
                 <td data-title="Personagem">{{user.name}}</td>
                 <td data-title="Resets">{{user.resets}}</td>
                 <td data-title="Level">{{user.level}}<span *ngIf="user.reseted"> (Resetou)</span></td>
@@ -37,11 +37,14 @@
             <tfoot>
             <tr>
                 <td colspan="4">
-                    <!--<strong>Alerta</strong> = Receber aviso ao resetar e se ficar mais de 10 minutos sem-->
-                    <!--subir de nível-->
+                    <strong>Alerta</strong> = Receber aviso ao resetar e se ficar mais de 10 minutos sem
+                    subir de nível
                 </td>
             </tr>
             </tfoot>
         </ui-data-table>
+    </ui-card>
+    <ui-card>
+        <img class="responsive" src="/assets/maps/aida.png" alt="">
     </ui-card>
 </div>

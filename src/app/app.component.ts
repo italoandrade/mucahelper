@@ -17,75 +17,59 @@ export class AppComponent implements AfterViewInit {
         this.users = [];
 
         this.socket
-            .on('updateUsersInfo', data => {
-                this.users = data;
+            .on('updateUsersInfo', users => {
+                users.forEach(user => {
+                    let found = false;
+                    this.users.forEach(thisUser => {
+                        if (user.name === thisUser.name) {
+                            found = true;
+
+                            thisUser.lastUpdate = user.lastUpdate ? new Date(user.lastUpdate) : null;
+                            thisUser.name = user.name;
+                            thisUser.level = user.level;
+                            thisUser.resets = user.resets;
+                        }
+                    });
+
+                    if (!found) {
+                        this.users.push({
+                            lastUpdate: user.lastUpdate ? new Date(user.lastUpdate) : null,
+                            name: user.name,
+                            level: user.level,
+                            resets: user.resets
+                        });
+                    }
+                });
+            });
+
+        this.socket
+            .on('userReseted', user => {
+                this.users.forEach(thisUser => {
+                    if (user.name === thisUser.name && thisUser.alert) {
+                        alert(user.name + ' resetou!');
+                    }
+                });
+            });
+
+        this.socket
+            .on('userDead', user => {
+                this.users.forEach(thisUser => {
+                    if (user.name === thisUser.name && thisUser.alert) {
+                        alert(user.name + ' não sobe de nível a mais de 10 minutos!');
+                    }
+                });
             });
     }
 
     ngAfterViewInit() {
         this.toolbarService.registerMainToolbar(document.getElementById('app-header'));
         this.toolbarService.activateExtendedToolbar(960);
-        // this.getUsers();
 
         // setInterval(() => {
-        //     this.getUsers();
         //     this.verifyReset();
         //     this.verifyDead();
         // }, 5000);
     }
-
-    // getUsers() {
-    //     this.http.get('http://189.35.176.127:1000/api')
-    //         .map(data => {
-    //             return data['_body'];
-    //         })
-    //         .subscribe(data => {
-    //             const users = [];
-    //
-    //             const mucaInspection = document.createElement('div');
-    //
-    //             mucaInspection.innerHTML = data;
-    //
-    //             const $tabela = mucaInspection.querySelectorAll('.tabela');
-    //
-    //             const search =
-    //                 [
-    //                     ...Array.prototype.filter.call($tabela[1].querySelectorAll('tr'), (item, index) => index > 1),
-    //                     ...Array.prototype.filter.call($tabela[2].querySelectorAll('tr'), (item, index) => index > 0)
-    //                 ];
-    //
-    //             search.forEach(item => {
-    //                 users.push({
-    //                     name: item.querySelectorAll('td')[1].innerHTML,
-    //                     level: parseInt(item.querySelectorAll('td')[2].innerHTML, 10),
-    //                     resets: parseInt(item.querySelectorAll('td')[3].innerHTML, 10)
-    //                 });
-    //             });
-    //
-    //             users.forEach(user => {
-    //                 let found = false;
-    //                 this.users.forEach(thisUser => {
-    //                     if (user.name === thisUser.name) {
-    //                         found = true;
-    //
-    //                         if (user.level !== thisUser.level) {
-    //                             thisUser.lastUpdate = new Date();
-    //                         }
-    //
-    //                         thisUser.name = user.name;
-    //                         thisUser.level = user.level;
-    //                         thisUser.resets = user.resets;
-    //                     }
-    //                 });
-    //
-    //                 if (!found) {
-    //                     this.users.push({
-    //                         ...user
-    //                     });
-    //                 }
-    //             });
-    //         });
-    // }
 
     // verifyReset() {
     //     this.users.forEach(user => {

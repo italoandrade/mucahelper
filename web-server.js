@@ -8,22 +8,82 @@ require('jsdom-global')();
 
 const port = 1000;
 
+const users = [];
+
 function loadServer() {
     const app = express();
     const io = require('socket.io')(3223);
 
     io.on('connection', function (socket) {
-        socket.emit('news', { hello: 'world' });
-        socket.on('my other event', function (data) {
-            console.log(data);
-        });
-
         setInterval(async () => {
             await updateUsersInfo();
             // console.log(users);
-
+            await verifyReset();
+            await verifyDead();
             socket.emit('updateUsersInfo', users);
         }, 3000);
+
+        async function verifyReset() {
+            users.forEach(user => {
+                if (!user.reseted) {
+                    let reseted;
+
+                    switch (user.name) {
+                        case 'Zortrax':
+                        case 'Adrik':
+                            reseted = (user.resets <= 15 && user.level >= 300)
+                                || (user.resets <= 25 && user.level >= 325)
+                                || (user.resets <= 55 && user.level >= 350)
+                                || (user.resets <= 170 && user.level >= 375)
+                                || (user.resets <= 250 && user.level >= 400);
+                            break;
+                        case 'Manndy':
+                            reseted = (user.resets <= 5 && user.level >= 300)
+                                || (user.resets <= 10 && user.level >= 325)
+                                || (user.resets <= 50 && user.level >= 350)
+                                || (user.resets <= 100 && user.level >= 375)
+                                || (user.resets <= 250 && user.level >= 400);
+                            break;
+                        default:
+                            reseted = (user.resets <= 3 && user.level >= 300)
+                                || (user.resets <= 10 && user.level >= 325)
+                                || (user.resets <= 35 && user.level >= 350)
+                                || (user.resets <= 80 && user.level >= 375)
+                                || (user.resets <= 250 && user.level >= 400);
+                    }
+
+                    if (reseted) {
+                        socket.emit('userReseted', {
+                            name: user.name
+                        });
+
+                        user.reseted = true;
+                    }
+                } else if (user.level < 10) {
+                    user.reseted = false;
+                }
+            });
+        }
+
+        async function verifyDead() {
+            users.forEach(user => {
+                if (user.lastUpdate) {
+                    const currentDate = new Date().getTime();
+                    const lastUpdateDate = user.lastUpdate.getTime();
+
+                    if ((currentDate - lastUpdateDate) > 600000) {
+                        if (!user.dead) {
+                            socket.emit('userDead', {
+                                name: user.name
+                            });
+                            user.dead = true;
+                        }
+                    } else {
+                        user.dead = false;
+                    }
+                }
+            });
+        }
     });
 
     app.get('/api', async (req, res) => {
@@ -76,8 +136,6 @@ if (cluster.isMaster) {
     loadServer();
 }
 
-const users = [];
-
 async function updateUsersInfo() {
     const data = await rp({
         method: 'POST',
@@ -118,10 +176,6 @@ async function updateUsersInfo() {
 
                 if (user.level !== thisUser.level) {
                     thisUser.lastUpdate = new Date();
-                    thisUser.history.push({
-                        level: thisUser.level,
-                        date: thisUser.lastUpdate
-                    });
                 }
 
                 thisUser.name = user.name;
