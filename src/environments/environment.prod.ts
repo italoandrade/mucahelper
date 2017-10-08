@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-    socket: 'https://mucahelper.trackfy.com:3223'
+    socket: 'http://52.87.115.99:3223'
 };
