@@ -1,5 +1,4 @@
 import {AfterViewInit, Component, ViewEncapsulation} from '@angular/core';
-import {Http} from '@angular/http';
 import {UiToolbarService} from 'ng-smn-ui';
 import {Socket} from 'ng-socket-io';
 
@@ -11,9 +10,8 @@ import {Socket} from 'ng-socket-io';
 })
 export class AppComponent implements AfterViewInit {
     users;
-    alertOpen: boolean;
 
-    constructor(private http: Http, private toolbarService: UiToolbarService, private socket: Socket) {
+    constructor(private toolbarService: UiToolbarService, private socket: Socket) {
         this.users = [];
 
         this.socket
@@ -64,74 +62,5 @@ export class AppComponent implements AfterViewInit {
     ngAfterViewInit() {
         this.toolbarService.registerMainToolbar(document.getElementById('app-header'));
         this.toolbarService.activateExtendedToolbar(960);
-
-        // setInterval(() => {
-        //     this.verifyReset();
-        //     this.verifyDead();
-        // }, 5000);
     }
-
-    // verifyReset() {
-    //     this.users.forEach(user => {
-    //         if (user.alert && !user.reseted) {
-    //             if (user.resets <= 3 && user.level >= 300) {
-    //                 if (!this.alertOpen) {
-    //                     this.alertOpen = true;
-    //                     user.reseted = true;
-    //                     alert(user.name + ' resetou!');
-    //                     this.alertOpen = false;
-    //                 }
-    //             } else if (user.resets <= 10 && user.level >= 325) {
-    //                 if (!this.alertOpen) {
-    //                     this.alertOpen = true;
-    //                     user.reseted = true;
-    //                     alert(user.name + ' resetou!');
-    //                     this.alertOpen = false;
-    //                 }
-    //             } else if (user.resets <= 35 && user.level >= 350) {
-    //                 if (!this.alertOpen) {
-    //                     this.alertOpen = true;
-    //                     user.reseted = true;
-    //                     alert(user.name + ' resetou!');
-    //                     this.alertOpen = false;
-    //                 }
-    //             } else if (user.resets <= 80 && user.level >= 375) {
-    //                 if (!this.alertOpen) {
-    //                     this.alertOpen = true;
-    //                     user.reseted = true;
-    //                     alert(user.name + ' resetou!');
-    //                     this.alertOpen = false;
-    //                 }
-    //             } else if (user.resets <= 250 && user.level >= 400) {
-    //                 if (!this.alertOpen) {
-    //                     this.alertOpen = true;
-    //                     user.reseted = true;
-    //                     alert(user.name + ' resetou!');
-    //                     this.alertOpen = false;
-    //                 }
-    //             }
-    //         } else if (user.level < 10) {
-    //             user.reseted = false;
-    //         }
-    //     });
-    // }
-    //
-    // verifyDead() {
-    //     this.users.forEach(user => {
-    //             if (user.alert && user.lastUpdate) {
-    //                 const currentDate = new Date().getTime();
-    //                 const lastUpdateDate = user.lastUpdate.getTime();
-    //
-    //                 if ((currentDate - lastUpdateDate) > 600000) {
-    //                     if (!this.alertOpen) {
-    //                         this.alertOpen = true;
-    //                         alert(user.name + ' não sobe de nível a mais de 10 minutos!');
-    //                         user.lastUpdate = null;
-    //                         this.alertOpen = false;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     );
-    // }
 }

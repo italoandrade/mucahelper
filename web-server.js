@@ -6,7 +6,7 @@ const compression = require('compression');
 const os = require("os");
 require('jsdom-global')();
 
-const port = 1000;
+const port = 3222;
 
 const users = [];
 
@@ -103,7 +103,7 @@ function loadServer() {
 
     let filesPath;
 
-    filesPath = require('path').join(__dirname, '/dist');
+    filesPath = require('path').join(__dirname, '/dist-prod');
 
     app.use(compression());
     app.use(express.static(filesPath));

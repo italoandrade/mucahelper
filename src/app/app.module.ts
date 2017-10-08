@@ -7,8 +7,9 @@ import {SMNUIModule, UiToolbarService} from 'ng-smn-ui';
 import {HttpModule} from '@angular/http';
 import {FormsModule} from '@angular/forms';
 import {SocketIoModule, SocketIoConfig} from 'ng-socket-io';
+import {environment} from '../environments/environment';
 
-const config: SocketIoConfig = { url: 'http://189.35.176.127:3223', options: {} };
+const config: SocketIoConfig = { url: environment.socket, options: {} };
 
 @NgModule({
     declarations: [
