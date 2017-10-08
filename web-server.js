@@ -5,14 +5,58 @@ const fs = require('fs');
 const compression = require('compression');
 const os = require("os");
 require('jsdom-global')();
-
 const port = 3222;
 
 const users = [];
 
 function loadServer() {
     const app = express();
-    const io = require('socket.io')(3223);
+
+    app.use((req, res, next) => {
+        res.header('Content-Type', 'application/json; charset=utf-8');
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authentication");
+
+        if (req.method === 'OPTIONS')
+            return res.status(204).end();
+
+        next();
+    });
+
+    app.get('/api', async (req, res) => {
+        const data = await rp({
+            method: 'POST',
+            url: 'https://www.mucabrasil.com.br/?go=guild&n=Brothers',
+            headers: {
+                "cache-control": "no-cache",
+            }
+        });
+
+        res.send(data);
+    });
+
+
+    let filesPath;
+
+    filesPath = require('path').join(__dirname, '/dist-prod');
+
+    app.use(compression());
+    app.use(express.static(filesPath));
+
+    app.set('views', filesPath);
+
+    app.get('/*', (req, res) => {
+        fs.readFile(`${filesPath}/index.html`, 'utf8', (err, text) => {
+            res.send(text);
+        });
+    });
+
+    const server = app.listen(port, () => {
+        console.log(`[${new Date()}]: Web server listening on port ${port}`);
+    });
+
+    const io = require('socket.io')(server);
 
     io.on('connection', function (socket) {
         setInterval(async () => {
@@ -84,40 +128,6 @@ function loadServer() {
                 }
             });
         }
-    });
-
-    app.get('/api', async (req, res) => {
-        res.header("Access-Control-Allow-Origin", "*");
-
-        const data = await rp({
-            method: 'POST',
-            url: 'https://www.mucabrasil.com.br/?go=guild&n=Brothers',
-            headers: {
-                "cache-control": "no-cache",
-            }
-        });
-
-        res.send(data);
-    });
-
-
-    let filesPath;
-
-    filesPath = require('path').join(__dirname, '/dist-prod');
-
-    app.use(compression());
-    app.use(express.static(filesPath));
-
-    app.set('views', filesPath);
-
-    app.get('/*', (req, res) => {
-        fs.readFile(`${filesPath}/index.html`, 'utf8', (err, text) => {
-            res.send(text);
-        });
-    });
-
-    app.listen(port, () => {
-        console.log(`[${new Date()}]: Web server listening on port ${port}`);
     });
 }
 
